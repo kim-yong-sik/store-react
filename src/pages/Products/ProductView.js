@@ -94,8 +94,12 @@ export default function ProductView({match}) {
         products
       }
 
-      const res = await postOrderSheets(request)
-      console.log(res)
+      try {
+        const { data: { orderSheetNo }} = await postOrderSheets(request)
+        history.push(`/?orderSheetNo=${orderSheetNo}`)
+      } catch (err) {
+        console.error(err)
+      }
     }
   }
 
