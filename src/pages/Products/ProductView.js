@@ -75,7 +75,9 @@ export default function ProductView({match}) {
       console.log(response)
       setProductOptions(response.data)
     }
-}
+  }
+
+  const createOrder = event => console.log(event)
 
   useEffect(()=>{
     _getProductDetail(product_no)
@@ -362,7 +364,7 @@ export default function ProductView({match}) {
                             alert("로그인 후 이용해주세요.")
                           }
                           
-                        }} className="btn_style direct" style={{backgroundColor: '#000'}}>바로 구매하기</a>
+                        }} className="btn_style direct" onClick={createOrder} style={{backgroundColor: '#000'}}>바로 구매하기</a>
                         <a  className="btn_style disabled" style={{display: 'none', backgroundColor: '#ddd'}}>품절</a>
                         <a  className="btn_style reservation" style={{display: 'none', backgroundColor: '#5865F5'}}>예약구매</a>
                         {/*
