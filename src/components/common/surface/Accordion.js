@@ -1,4 +1,4 @@
-import '../../../assets/scss/interaction/accordion.scss'
+import '../../../assets/scss/interaction/accordion.scss';
 import { useRef, useEffect } from 'react';
 
 /**
@@ -6,31 +6,29 @@ import { useRef, useEffect } from 'react';
  * title: string
  * children: HTMLElements
  */
-const Accordion = prop => {
+const Accordion = (prop) => {
   const { title, children, defaultVisible } = prop;
 
-  const trigger = useRef(null)
-  const content = useRef(null)
+  const trigger = useRef(null);
+  const content = useRef(null);
 
   useEffect(() => {
-    defaultVisible && show()
+    defaultVisible && show();
   }, [defaultVisible]);
 
-  const toggle = () => content.current.parentNode.clientHeight === 0 ? show() : hide();
+  const toggle = () => (content.current.parentNode.clientHeight === 0 ? show() : hide());
 
-  function show () {
+  function show() {
     const height = content.current.clientHeight;
 
-    content.current.parentNode.style.height = `${height}px`
-    trigger.current.classList.add('on')
+    content.current.parentNode.style.height = `${height}px`;
+    trigger.current.classList.add('on');
   }
 
-  function hide () {
-    content.current.parentNode.style.height = 0
-    trigger.current.classList.remove('on')
+  function hide() {
+    content.current.parentNode.style.height = 0;
+    trigger.current.classList.remove('on');
   }
-
-
 
   return (
     <div className="acc_item" ref={trigger}>
@@ -46,7 +44,7 @@ const Accordion = prop => {
         </div>
       </div>
     </div>
-  )
+  );
 };
 
 export default Accordion;
