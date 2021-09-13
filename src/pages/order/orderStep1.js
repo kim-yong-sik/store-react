@@ -142,7 +142,7 @@ const OrderStep1 = ({ location }) => {
   }, [init]);
 
   const representativeProductName = useMemo(
-    () => deliveryGroups[0]?.orderProducts[0]?.productName);
+    () => deliveryGroups?.[0]?.orderProducts?.[0]?.productName ?? '');
 
   return (
     <>

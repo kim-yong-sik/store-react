@@ -72,7 +72,9 @@ const DiscountForm = ({ discount, setDiscount, paymentInfo }) => {
                 <button
                   className="button button_negative button-s popup_comm_btn"
                   data-popup-name="coupon_inquiry"
-                  type="button">쿠폰 조회
+                  type="button"
+                  onClick={() => setUseCouponVisible(true)}
+                >쿠폰 조회
                 </button>
                 {useCouponVisible && <UseCoupon />}
               </div>
