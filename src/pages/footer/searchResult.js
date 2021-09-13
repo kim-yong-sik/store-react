@@ -1,4 +1,4 @@
-import { React, useEffect, useState } from 'react';
+import { React, useEffect, useState, useMemo } from 'react';
 
 //SEO
 import SEOHelmet from '../../components/SEOHelmet';
@@ -22,7 +22,10 @@ import "swiper/swiper.scss"
 
 //utils
 import {useWindowSize} from '../../utils/utils'
-import Product from '../../components/Product';
+import { TAB_MAP } from '../../const/search';
+import Product from './searchResult/Product';
+
+const tabs = Object.keys(TAB_MAP);
 
 export default function SearchResult({match}) {
     const {keyword} = match.params;
@@ -70,163 +73,116 @@ export default function SearchResult({match}) {
 
 
     SwiperCore.use([Navigation, Pagination, Scrollbar, Autoplay, Controller]);
+
+    const count = useMemo(() => ({
+      ALL: productCount + exhibitionCount + categoryCount + noticeCount,
+      PRODUCT: productCount,
+      EVENT: exhibitionCount,
+      CATEGORY: categoryCount,
+      NOTICE: noticeCount,
+    }), [productCount, exhibitionCount, categoryCount, noticeCount])
     
     return (
         <>
         <SEOHelmet title={"검색 결과 페이지"} />
         <div className="contents category">
-
-        <div className="container">
-  <div className="content no_margin">{/* 검색 영역 페이지에 no_margin 클래스 추가 */}
-    {/* 검색 결과 영역 */}
-    <div className="searchResult">
-      <div className="searchResult__form">
-        <form>
-          <label htmlFor="search-input">검색결과</label>
-          <input type="text" id="search-input" className="input-txt" defaultValue={searchKeyword} onChange={(e)=>{
-            setSearchKeyword(e.target.value)
-          }} />
-          <button type="button" className="btn_search" title="검색" onClick={()=>{
-            _productSearch(searchKeyword)
-            setFinalKeyword(searchKeyword)
-          }}>검색</button>
-        </form>
-      </div>
-      <div className="result-message">
-        <p>
-          <strong>‘{finalKeyword}’</strong>에 대한 검색결과는 총 <strong>{productCount + exhibitionCount + categoryCount + noticeCount}</strong>건 입니다.
-        </p>
-      </div>
-    </div>
-    {/*// 검색 결과 영역 */}
-    {/* 스와이퍼 탭영역 */}
-        { 
-            size.width < 1281 ?
-            <div className="swipe_tab swiper-container">
-
-        <Swiper className="swiper-wrapper"
-        navigation={{
-            nextEl: '.swiper-button-next',
-            prevEl: '.swiper-button-prev',
-        }}
-        slidesPerView="auto"
-        freeMode={true}
-      >
-        <SwiperSlide className={`swiper-slide ${tabState == "total" ? "active" : ""}`}>
-          <a  onClick={()=>{
-            setTabState("total");
-          }}>전체 ({productCount + exhibitionCount + categoryCount + noticeCount})</a>
-        </SwiperSlide>
-        <SwiperSlide className={`swiper-slide ${tabState == "product" ? "active" : ""}`}>
-          <a  onClick={()=>{
-            setTabState("product");
-          }}>제품 ({productCount})</a>
-        </SwiperSlide>
-        <SwiperSlide className={`swiper-slide ${tabState == "exhibition" ? "active" : ""}`}>
-          <a  onClick={()=>{
-            setTabState("exhibition");
-          }}>기획전 ({exhibitionCount})</a>
-        </SwiperSlide>
-        <SwiperSlide className={`swiper-slide ${tabState == "category" ? "active" : ""}`}>
-          <a  onClick={()=>{
-            setTabState("category");
-          }}>카테고리 ({categoryCount})</a>
-        </SwiperSlide>
-        <SwiperSlide className={`swiper-slide ${tabState == "notice" ? "active" : ""}`}>
-          <a  onClick={()=>{
-            setTabState("notice");
-          }}>공지사항 ({noticeCount})</a>
-        </SwiperSlide>
-        </Swiper>
-      <div className="swiper-button-prev">
-      <a  title="메뉴 더보기">메뉴 더보기</a>
-    </div>
-    <div className="swiper-button-next">
-      <a  title="메뉴 더보기">메뉴 더보기</a>
-    </div>
-  </div>
-        :
-<div class="swipe_tab swiper-container">
-        <ul class="swiper-wrapper">
-          <li className={`swiper-slide ${tabState == "total" ? "active" : ""}`}>
-            <a  onClick={()=>{
-            setTabState("total");
-          }}>전체 ({productCount + exhibitionCount + categoryCount + noticeCount})</a>
-          </li>
-          <li className={`swiper-slide ${tabState == "product" ? "active" : ""}`}>
-            <a  onClick={()=>{
-            setTabState("product");
-          }}>제품 ({productCount})</a>
-          </li>
-          <li className={`swiper-slide ${tabState == "exhibition" ? "active" : ""}`}>
-            <a  onClick={()=>{
-            setTabState("exhibition");
-          }}>기획전 ({exhibitionCount})</a>
-          </li>
-          <li className={`swiper-slide ${tabState == "category" ? "active" : ""}`}>
-            <a  onClick={()=>{
-            setTabState("category");
-          }}>카테고리 ({categoryCount})</a>
-          </li>
-          <li className={`swiper-slide ${tabState == "notice" ? "active" : ""}`}>
-            <a  onClick={()=>{
-            setTabState("notice");
-          }}>공지사항 ({noticeCount})</a>
-          </li>
-        </ul>
-        <div class="swiper-button-prev">
-          <a  title="메뉴 더보기">메뉴 더보기</a>
-        </div>
-        <div class="swiper-button-next">
-          <a  title="메뉴 더보기">메뉴 더보기</a>
-        </div>
-      </div>
-
-        }
-                <div className="product">
-
-
-    { (tabState == "total" || tabState == "product") &&
-      <>
-      <div className="section_top">
-        <h2 className="title">제품<span>({productCount})</span></h2>
-        <div className={`itemsort ${mobileOrderOpen ? "itemsort--open" : ""}`} aria-label="상품 정렬">
-                    <button className="itemsort__button" onClick={()=>{
-                        setMobileOrderOpen(!mobileOrderOpen)
-                    }}>
-                        <span className="itemsort__button__label sr-only">정렬기준:</span>
-                        <span className="itemsort__button__selected">{orderBy == "RECENT_PRODUCT" ? "최신순" : (orderBy == "TOP_PRICE" ? "높은 가격순" : "낮은 가격순")}</span>
-                    </button>
-          <div className="itemsort__drawer">
-                        <ul className="itemsort__items">
-                        <li className={`itemsort__item ${orderBy == "RECENT_PRODUCT" ? "itemsort__item--active" : ""}`}><a  className="itemsort__item__link" onClick={()=>{
-                            setOrderBy("RECENT_PRODUCT")
-                        }}>최신순</a></li>
-                        <li className={`itemsort__item ${orderBy == "TOP_PRICE" ? "itemsort__item--active" : ""}`}><a  className="itemsort__item__link" onClick={()=>{
-                            setOrderBy("TOP_PRICE")
-                        }}>높은 가격순</a></li>
-                        <li className={`itemsort__item ${orderBy == "DISCOUNTED_PRICE" ? "itemsort__item--active" : ""}`}><a  className="itemsort__item__link" onClick={()=>{
-                            setOrderBy("DISCOUNTED_PRICE")
-                        }}>낮은 가격순</a></li>
-                        </ul>
+          <div className="container">
+            <div className="content no_margin">{/* 검색 영역 페이지에 no_margin 클래스 추가 */}
+            {/* 검색 결과 영역 */}
+              <div className="searchResult">
+                <div className="searchResult__form">
+                  <form>
+                    <label htmlFor="search-input">검색결과</label>
+                    <input type="text" id="search-input" className="input-txt" defaultValue={searchKeyword} onChange={(e)=>{
+                      setSearchKeyword(e.target.value)
+                    }} />
+                    <button type="button" className="btn_search" title="검색" onClick={()=>{
+                      _productSearch(searchKeyword)
+                      setFinalKeyword(searchKeyword)
+                    }}>검색</button>
+                  </form>
+                </div>
+                <div className="result-message">
+                  <p>
+                    <strong>‘{finalKeyword}’</strong>에 대한 검색결과는 총 <strong>{productCount + exhibitionCount + categoryCount + noticeCount}</strong>건 입니다.
+                  </p>
+                </div>
+              </div>
+              {/*// 검색 결과 영역 */}
+              {/* 스와이퍼 탭영역 */}
+              { 
+                size.width < 1281 ?
+                  <div className="swipe_tab swiper-container">
+                    <Swiper className="swiper-wrapper"
+                    navigation={{
+                        nextEl: '.swiper-button-next',
+                        prevEl: '.swiper-button-prev',
+                    }}
+                    slidesPerView="auto"
+                    freeMode={true}
+                  >
+                    {
+                      tabs.map(tab => {
+                        const { key, label } = TAB_MAP[tab];
+                        return (
+                          <SwiperSlide
+                            key={ key }
+                            className={`swiper-slide ${tabState === key ? "active" : ""}`}
+                          >
+                            <a 
+                              href={`#${key}`}
+                              onClick={ event => {
+                                event.preventDefault();
+                                setTabState(key);
+                              } }  
+                            >{ label }{ `(${count[key]})` }</a>
+                          </SwiperSlide>
+                        )
+                      })
+                    }
+                  </Swiper>
+                    <div className="swiper-button-prev">
+                      <a  title="메뉴 더보기">메뉴 더보기</a>
                     </div>
-        </div>      
-        </div>
-      {/* item-list */}
-      <div className="product__list product__list--lite">
-        {/* item */}
-        {productList && productList.map((item, itemIndex) => {
-          return(<Product product={item} />)
-        })}
-
-      </div>
-      {/* 더보기 버튼영역 */}
-      <div className="btn_area">
-        <button type="button" className="btn_more" title="제품 더보기">더보기<span className="ico_plus" /></button>
-      </div>
-      {/*// 더보기 버튼영역 */}
-      </>
-    }
+                    <div className="swiper-button-next">
+                      <a  title="메뉴 더보기">메뉴 더보기</a>
+                    </div>
+                  </div>
+                :
+                  <div class="swipe_tab swiper-container">
+                    <ul class="swiper-wrapper">
+                      {
+                        tabs.map(tab => {
+                          const { key, label } = TAB_MAP[tab];
+                          return (
+                            <li
+                              key={ key }
+                              className={`swiper-slide ${tabState === key ? "active" : ""}`}
+                            >
+                              <a 
+                                href={`#${key}`}
+                                onClick={ event => {
+                                  event.preventDefault();
+                                  setTabState(key);
+                                } }  
+                              >{ label }{ `(${count[key]})` }</a>
+                            </li>
+                          )
+                        })
+                      }
+                    </ul>
+                    <div class="swiper-button-prev">
+                      <a  title="메뉴 더보기">메뉴 더보기</a>
+                    </div>
+                    <div class="swiper-button-next">
+                      <a  title="메뉴 더보기">메뉴 더보기</a>
+                    </div>
+                  </div>
+              }
+              <div className="product">
+              {
+                tabState === TAB_MAP.PRODUCT.key && <Product />
+              }
 
       {/* 기획전 리스트 영역 */}
 
