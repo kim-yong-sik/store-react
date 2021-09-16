@@ -80,14 +80,13 @@ export default function OrderListItem({
         responsibleObjectType: null,
         productCnt: orderCnt,
       },
-    })
-      .then(() => {
-        alert(successMessage);
-      })
-      .catch(() => {
-        // FIXME: 않이 외 에러 catch가 않되?
+    }).then((res) => {
+      if (res.data.status === 404 || res.data.status === 400) {
         alert('취소 실패하였습니다. 다시 시도해주세요.'); // TODO: 실패 메세지 기획 없음
-      });
+        return;
+      }
+      alert(successMessage);
+    });
   };
 
   return (

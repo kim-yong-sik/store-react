@@ -172,7 +172,7 @@ export default function OrderDetail() {
     html.appendChild(printDiv);
     printDiv.innerHTML = printContents;
     document.body.style.display = 'none';
-    window.print();
+    // window.print();
     document.body.style.display = 'block';
     printDiv.style.display = 'none';
   };
