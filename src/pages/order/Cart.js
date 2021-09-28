@@ -31,6 +31,7 @@ import {
 import gc from '../../storage/guestCart.js';
 import { Link } from 'react-router-dom';
 import { useHistory } from 'react-router';
+import Alert from '../../components/common/Alert';
 
 const Cart = () => {
   const { isLogin } = useContext(GlobalContext);
@@ -38,6 +39,9 @@ const Cart = () => {
 
   // popup
   const [showSolicitation, setShowSolicitation] = useState(false);
+
+  // alert
+  const [hasInvalidProduct, setHasInvalidProduct] = useState(false);
 
   // state
   const [wait, setWait] = useState(false);
@@ -235,22 +239,26 @@ const Cart = () => {
   }
 
   function mapData (responseData) {
-    const { deliveryGroups, price } = responseData;
+    const { deliveryGroups, invalidProducts, price } = responseData;
 
     if (!deliveryGroups?.length) {
       reset();
       return;
     }
 
+    if (invalidProducts?.length) {
+      setHasInvalidProduct(true);
+    }
+
     const result = deliveryGroups.flatMap(delivery =>
       delivery.orderProducts.flatMap(productGroup =>
         productGroup.orderProductOptions.flatMap(product => {
-            // debug pores
-            return {
-              productNo: productGroup.productNo,
-              productName: productGroup.productName,
-              cartNo: product.cartNo,
-              imageUrl: product.imageUrl,
+          // debug pores
+          return {
+            productNo: productGroup.productNo,
+            productName: productGroup.productName,
+            cartNo: product.cartNo,
+            imageUrl: product.imageUrl,
               orderCnt: product.orderCnt,
               standardAmt: product.price.standardAmt,
               buyAmt: product.price.buyAmt,
@@ -274,6 +282,9 @@ const Cart = () => {
   return (
     <>
       <SEOHelmet title={'장바구니'} />
+      {hasInvalidProduct &&
+      <Alert onClose={() => setHasInvalidProduct(false)}>구매불가능한 상품은
+        제외되었습니다.</Alert>}
       {wait && <Dimmed />}
       <div className="contents order">
         <div className="container" id="container">
