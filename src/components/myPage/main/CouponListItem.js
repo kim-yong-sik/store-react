@@ -6,7 +6,7 @@ const CouponListItem = ({ couponIssueNo, couponName, discountRate, minSalePrice,
   };
 
   return (
-    <div className="coupon_box">
+    <div className="coupon_box" style={{ float: 'left', 'padding-right': '60px' }}>
       <div className="coupon">
         <span className="coupon_no">
           No. <span className="num">{couponIssueNo}</span>
