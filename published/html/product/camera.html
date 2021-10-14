@@ -12,6 +12,7 @@
 <script src="../lib/js/jquery-3.6.0.min.js"></script>
 <script src="../lib/js/swiper.min.js"></script>
 <script src="../js/ux-common.js"></script>
+<script src='../js/ux-category.js'></script>
 </head>
 <body>
 <div class="wrapper">
@@ -239,22 +240,28 @@
   <div class="container">
     <div class="content">
 
-      <div class="category__header">
-        <h1 class="category__header__name">카메라</h1>
+      <div class="category__header audio">
+        <h1 class="category__header__name">오디오</h1>
         <div class="category__header__menu swiper-container">
           <ul class="swiper-wrapper centered">
             <li class="swiper-slide all category__header__menu--active"><a href="#"><span>전체보기</span></a></li>
-            <li class="swiper-slide category__header__menu__camera0">
-              <a href="#"><span>렌즈교환식 카메라</span></a>
+            <li class="swiper-slide category__header__menu__audio0">
+              <a href="#"><span>헤드폰/이어폰</span></a>
             </li>
-            <li class="swiper-slide category__header__menu__camera1">
-              <a href="#"><span>컴팩트 카메라</span></a>
+            <li class="swiper-slide category__header__menu__audio1">
+              <a href="#"><span>스피커</span></a>
+            </li>
+            <li class="swiper-slide category__header__menu__audio2">
+              <a href="#"><span>홈 오디오</span></a>
+            </li>
+            <li class="swiper-slide category__header__menu__audio3">
+              <a href="#"><span>워크맨/녹음기</span></a>
             </li>
           </ul>
         </div>
       </div>
 
-      <script>
+      <!-- <script>
         const category = ".category__header__menu";
         const submenu = $(category).find(".swiper-slide");
         const activeClass = "category__header__menu--active";
@@ -286,7 +293,7 @@
             },
           });
         }
-      </script>
+      </script> -->
 
       <!-- item-list-wrapper -->
       <div class="product__list__wrapper">
