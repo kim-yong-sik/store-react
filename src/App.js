@@ -247,8 +247,6 @@ const App = (props) => {
       });
   }, [location]);
 
-  Array();
-
   const isAppBarEnabled = useMemo(() => {
     const rejectPathNames = [
       '/product-view',
@@ -396,6 +394,18 @@ const App = (props) => {
             <Route exact path="/member/lockedAccounts" component={LockedAccounts} />
             <Route exact path="/callback" component={Callback} />
 
+            {/* 검색 결과  */}
+            <Route path="/search-result/:keyword" component={SearchResult} />
+
+            {/* Footer  */}
+            <Route path="/footer/policy" component={Policy} />
+            <Route path="/footer/terms" component={Terms} />
+            <Route path="/footer/sitemap" component={SiteMap} />
+
+            {/* error */}
+            <Route exact path="/404" component={Error404} />
+            <Route exact path="/error-server" component={ErrorServer} />
+
             {/* app */}
             {agent.isApp && (
               <>
@@ -406,18 +416,6 @@ const App = (props) => {
                 <Route exact path="/app/terms/license" component={TermsLicense} />
               </>
             )}
-
-            {/* 검색 결과  */}
-            <Route path="/search-result/:keyword" component={SearchResult} />
-
-            {/* Footer  */}
-            <Route exact path="/footer/policy" component={Policy} />
-            <Route exact path="/footer/terms" component={Terms} />
-            <Route exact path="/footer/sitemap" component={SiteMap} />
-
-            {/* error */}
-            <Route exact path="/404" component={Error404} />
-            <Route exact path="/error-server" component={ErrorServer} />
 
             <Route component={Error404} />
           </Switch>
