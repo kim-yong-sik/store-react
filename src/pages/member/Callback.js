@@ -42,8 +42,7 @@ const Callback = () => {
       shopOauthCallback?.(openIdProfile.errorCode, openIdProfile.body);
       window.close();
     } else {
-      openAlert(openIdProfile.errorMessage, () => () => {
-      });
+      openAlert(openIdProfile.errorMessage, () => () => {});
     }
   };
 
@@ -51,11 +50,7 @@ const Callback = () => {
     processAuthCallback();
   }, []);
 
-  return (
-    <>
-      {alertVisible && <Alert onClose={closeModal}>{alertMessage}</Alert>}
-    </>
-  );
+  return <>{alertVisible && <Alert onClose={closeModal}>{alertMessage}</Alert>}</>;
 };
 
 export default Callback;

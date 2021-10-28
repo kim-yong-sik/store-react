@@ -19,14 +19,7 @@ import '../../assets/scss/contents.scss';
 import '../../assets/scss/order.scss';
 
 // api
-import {
-  getCart,
-  postCart,
-  putCart,
-  postGuestCart,
-  deleteCart,
-  postOrderSheets, getCartCount,
-} from '../../api/order';
+import { getCart, postCart, putCart, postGuestCart, deleteCart, postOrderSheets, getCartCount } from '../../api/order';
 
 // module
 import gc from '../../storage/guestCart.js';
@@ -42,7 +35,6 @@ const Cart = ({ location }) => {
   const savingGuestCart = useMemo(() => {
     const { search } = location;
     return search?.includes('savingGuestCart=true');
-
   }, [location]);
 
   // popup
@@ -52,15 +44,15 @@ const Cart = ({ location }) => {
   const [wait, setWait] = useState(false);
   const [products, setProducts] = useState([]);
   const [beforeCountProducts, setBeforeCountProducts] = useState([]); // 비회원
-                                                                      // 장바구니에서
-                                                                      // 재고 소진등
-                                                                      // 문제로 해당
-                                                                      // 상품이
-                                                                      // 장바구니에서
-                                                                      // 사라지는
-                                                                      // 문제
-                                                                      // 보정하기
-                                                                      // 위한 데이터
+  // 장바구니에서
+  // 재고 소진등
+  // 문제로 해당
+  // 상품이
+  // 장바구니에서
+  // 사라지는
+  // 문제
+  // 보정하기
+  // 위한 데이터
   const putProducts = useMemo(
     () =>
       products.map((product) => ({
@@ -82,10 +74,10 @@ const Cart = ({ location }) => {
 
   const [amount, setAmount] = useState(null);
   const [checkedIndexes, setCheckedIndexes] = useState([]);
-  const checkedProducts = useMemo(
-    () => products.filter((_, index) => checkedIndexes.includes(index)),
-    [products, checkedIndexes],
-  );
+  const checkedProducts = useMemo(() => products.filter((_, index) => checkedIndexes.includes(index)), [
+    products,
+    checkedIndexes,
+  ]);
 
   const init = async () => {
     setWait(true);
@@ -111,17 +103,17 @@ const Cart = ({ location }) => {
       const body = getGuestCartRequest(gc.items);
       fetchGuestCart(body)
         .then((data) => {
-        mapData(data);
-        checkGuestCartMissingProduct(getMappedData(data.deliveryGroups),
-          gc.items);
-        gc.fetch();
-        setCartCount(headerDispatch, gc.items.length);
-      }).catch(console.error).finally(() => setWait(false));
+          mapData(data);
+          checkGuestCartMissingProduct(getMappedData(data.deliveryGroups), gc.items);
+          gc.fetch();
+          setCartCount(headerDispatch, gc.items.length);
+        })
+        .catch(console.error)
+        .finally(() => setWait(false));
     }
   };
 
-  function checkGuestCartMissingProduct (
-    availableProducts, guestCartStorageItems) {
+  function checkGuestCartMissingProduct(availableProducts, guestCartStorageItems) {
     if (guestCartStorageItems.length > availableProducts.length) {
       alert('구매 불가한 상품이 포함되어있어 제거 되었습니다.');
       gcUpdate(availableProducts);
@@ -136,8 +128,7 @@ const Cart = ({ location }) => {
         deleteGuestCart(checkedIndexes);
       }
       history.push(`/order/sheet?orderSheetNo=${orderSheetNo}`);
-    }
-    catch (err) {
+    } catch (err) {
       console.error(err);
     }
   };
@@ -192,13 +183,12 @@ const Cart = ({ location }) => {
   }
 
   function postGuestCartToMemberCart(items) {
-    const result = items.map(
-      ({ productNo, optionNo, orderCnt, optionInputs }) => ({
-        productNo,
-        optionNo,
-        orderCnt,
-        optionInputs,
-      }));
+    const result = items.map(({ productNo, optionNo, orderCnt, optionInputs }) => ({
+      productNo,
+      optionNo,
+      orderCnt,
+      optionInputs,
+    }));
     return postMemberCart(result);
   }
 
@@ -220,9 +210,13 @@ const Cart = ({ location }) => {
   function updateCart() {
     setWait(true);
     if (isLogin) {
-      updateMemberCart().then(() => setWait(false)).catch(handlePutCartError);
+      updateMemberCart()
+        .then(() => setWait(false))
+        .catch(handlePutCartError);
     } else {
-      updateGuestCart().then(() => setWait(false)).catch(() => window.location.reload());
+      updateGuestCart()
+        .then(() => setWait(false))
+        .catch(() => window.location.reload());
     }
   }
 
@@ -234,8 +228,7 @@ const Cart = ({ location }) => {
       alert('상품의 재고가 충분치 않습니다.');
     }
     if (code === 'O8002' || code === 'O8003' || code === 'O8004') {
-      alert(
-        '최대 구매 가능갯수를 초과하였습니다.');
+      alert('최대 구매 가능갯수를 초과하였습니다.');
     }
 
     window.location.reload();
@@ -308,7 +301,7 @@ const Cart = ({ location }) => {
     init();
   }
 
-  function gcUpdate (products) {
+  function gcUpdate(products) {
     const data = getGuestCartRequest(products);
     gc.cover(data);
   }
@@ -324,7 +317,7 @@ const Cart = ({ location }) => {
     }));
   }
 
-  function mapData (responseData) {
+  function mapData(responseData) {
     if (!responseData?.deliveryGroups?.length) {
       reset();
       return;
@@ -335,7 +328,7 @@ const Cart = ({ location }) => {
     setAmount(price);
   }
 
-  function getMappedData (deliveryGroups) {
+  function getMappedData(deliveryGroups) {
     if (!deliveryGroups?.length) {
       return [];
     }
@@ -363,7 +356,7 @@ const Cart = ({ location }) => {
     );
   }
 
-  function reset () {
+  function reset() {
     setProducts([]);
     setAmount(null);
   }

@@ -1,9 +1,9 @@
-const openIos = url => {
+const openIos = (url) => {
   const encodedParam = fixedEncodeURIComponent('||' + url);
   window.location = 'sonyapp://openbrowser' + encodedParam;
 };
 
-const openAndroid = url => {
+const openAndroid = (url) => {
   window.location = 'sonyapp://openbrowser||' + url;
 };
 
@@ -24,5 +24,7 @@ export const openWindow = (agent, url, target = '', features = '') => {
 };
 
 function fixedEncodeURIComponent(str) {
-  return encodeURIComponent(str).replace(/[!'()]/g, escape).replace(/\*/g, '%2A');
+  return encodeURIComponent(str)
+    .replace(/[!'()]/g, escape)
+    .replace(/\*/g, '%2A');
 }

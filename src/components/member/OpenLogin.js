@@ -31,10 +31,12 @@ const OpenLogin = ({ title, message, customCallback }) => {
   const { onChangeGlobal } = useContext(GlobalContext);
   const profileDispatch = useProileDispatch();
 
-  const openIdData = openIdJoinConfig?.providers.sort((a) => a === 'naver' ? -1 : 1).map(provider => ({
-    provider,
-    label: label[provider],
-  }));
+  const openIdData = openIdJoinConfig?.providers
+    .sort((a) => (a === 'naver' ? -1 : 1))
+    .map((provider) => ({
+      provider,
+      label: label[provider],
+    }));
 
   // alert
   const [alertVisible, setAlertVisible] = useState(false);
@@ -60,7 +62,10 @@ const OpenLogin = ({ title, message, customCallback }) => {
     setItem(KEY.OPENID_PROVIDER, provider, 30 * 60 * 1000);
     setItem(KEY.OPENID_TOKEN, state, 30 * 60 * 1000);
 
-    const loginUrl = OPEN_URL[type].replace('{clientId}', clientId).replace('{redirectUri}', redirectUri).replace('{state}', state);
+    const loginUrl = OPEN_URL[type]
+      .replace('{clientId}', clientId)
+      .replace('{redirectUri}', redirectUri)
+      .replace('{state}', state);
     window.openWindow(loginUrl, '간편 로그인', 'width=420px,height=550px,scrollbars=yes');
     openLoginPopup();
   };
@@ -72,12 +77,13 @@ const OpenLogin = ({ title, message, customCallback }) => {
   const _openIdAuthCallback = async (errorCode, profileResult = null) => {
     window.shopOauthCallback = null;
 
-    if (errorCode === '0000') { // 성공
+    if (errorCode === '0000') {
+      // 성공
       history.push({
         pathname: '/member/join-agree?sns=true',
         state: {
           email: profileResult.customerid,
-        }
+        },
       });
     } else if (errorCode === '3000') {
       const redirectedProvider = getItem(KEY.OPENID_PROVIDER);
@@ -115,23 +121,31 @@ const OpenLogin = ({ title, message, customCallback }) => {
   return (
     <>
       {alertVisible && <Alert onClose={closeModal}>{alertMessage}</Alert>}
-      {openIdJoinConfig && <div className="sns_login_box">
-        {title ? (<div className="txt_lft">
-          <strong className="sns_title">{message}</strong>
-          <p>{title}</p>
-        </div>) : (<>
-          <strong className="sns_title" dangerouslySetInnerHTML={{ __html: message }} />
-        </>)}
-        <ul className="sns_list">
-          {openIdData.map(({ provider, label }) => {
-            return (
-              <li className={provider} key={provider}>
-                <a href="javascript:void(0)" onClick={() => openIdLogin(provider)}>{label}</a>
-              </li>
-            );
-          })}
-        </ul>
-      </div>}
+      {openIdJoinConfig && (
+        <div className="sns_login_box">
+          {title ? (
+            <div className="txt_lft">
+              <strong className="sns_title">{message}</strong>
+              <p>{title}</p>
+            </div>
+          ) : (
+            <>
+              <strong className="sns_title" dangerouslySetInnerHTML={{ __html: message }} />
+            </>
+          )}
+          <ul className="sns_list">
+            {openIdData.map(({ provider, label }) => {
+              return (
+                <li className={provider} key={provider}>
+                  <a href="javascript:void(0)" onClick={() => openIdLogin(provider)}>
+                    {label}
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
     </>
   );
 };
