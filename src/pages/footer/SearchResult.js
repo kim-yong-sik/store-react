@@ -65,6 +65,9 @@ export default function SearchResult({ match }) {
   const [categoryCount, setCategoryCount] = useState(0);
   const [noticeCount, setNoticeCount] = useState(0);
 
+  const [resetViewMore, setResetViewMore] = useState(false);
+  const [resetCategory, setResetCategory] = useState(false);
+
   const getProductQuery = useCallback((keyword, orderBy, pageNumber = 1, pageSize = PAGE_SIZE.PRODUCT) => {
     const orderByQuery = _.chain(orderList)
       .filter(({ orderBy: ob }) => ob === orderBy)
@@ -134,11 +137,11 @@ export default function SearchResult({ match }) {
 
   const fetchCategory = (pageNumber, data, pageSize = PAGE_SIZE.CATEGORY) => {
     if (pageNumber === 1) {
-      setCategoryList(data.slice(0, pageSize));
+      setCategoryList([...data].slice(0, pageSize));
     } else {
       const start = (pageNumber - 1) * pageSize;
       const end = start + pageSize;
-      setCategoryList((prev) => prev.concat(initialCategoryList.slice(start, end)));
+      setCategoryList((prev) => prev.concat([...initialCategoryList].slice(start, end)));
     }
   };
 
@@ -146,9 +149,9 @@ export default function SearchResult({ match }) {
     try {
       const { data } = await getCategoryListByKeyword(keyword);
       setInitialCategoryList(data.flatCategories);
-      // setCategoryList(data.flatCategories);
       setCategoryCount(data.flatCategories.length || 0);
       fetchCategory(1, data.flatCategories);
+      setResetCategory(() => !isAll);
     } catch (e) {
       console.error(e);
     }
@@ -184,6 +187,7 @@ export default function SearchResult({ match }) {
     searchNotice(mapNewKeyword, config.notice.boardNo);
     searchEvent(mapNewKeyword);
     searchCategory(mapNewKeyword);
+    setResetViewMore(false);
   };
 
   const isAll = useMemo(() => tabState === 'ALL', [tabState]);
@@ -213,6 +217,14 @@ export default function SearchResult({ match }) {
 
   useEffect(() => searchNotice(keyword, config.notice.boardNo, noticeNewest), [noticeNewest]);
 
+  useEffect(() => {
+    if (tabState === 'CATEGORY' || isAll) {
+      searchCategory(keyword);
+    }
+    // searchCategory(keyword, true);
+    // console.log(tabState);
+  }, [tabState]);
+
   SwiperCore.use([Navigation, Pagination, Scrollbar, Autoplay, Controller]);
 
   return (
@@ -222,7 +234,12 @@ export default function SearchResult({ match }) {
         <div className="container">
           <div className="content no_margin">
             {/* 검색 영역 페이지에 no_margin 클래스 추가 */}
-            <ResultTop handleSearch={handleSearch} allCount={count.ALL} initalKeyword={initalKeyword} />
+            <ResultTop
+              handleSearch={handleSearch}
+              allCount={count.ALL}
+              initalKeyword={initalKeyword}
+              setResetViewMore={setResetViewMore}
+            />
             <Tab tabState={tabState} setTabState={setTabState} count={count} />
             {count.ALL === 0 ? (
               <SearchResultNone />
@@ -254,6 +271,9 @@ export default function SearchResult({ match }) {
                       keyword={keyword}
                       categoryList={categoryList}
                       categoryCount={categoryCount}
+                      resetCategory={resetCategory}
+                      setResetCategory={setResetCategory}
+                      isAll={isAll}
                     />
                   )}
                   {(isAll || tabState === 'NOTICE') && (
