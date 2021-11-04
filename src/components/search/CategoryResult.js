@@ -1,6 +1,6 @@
 import _ from 'lodash';
-import React from 'react';
-import { categoriesExtraDataMap } from '../../const/category';
+import React, { useEffect } from 'react';
+import { categoriesExtraDataMap, espCategoryNo } from '../../const/category';
 import { PAGE_SIZE } from '../../const/search';
 import ViewMore from '../common/ViewMore';
 import { useHistory } from 'react-router';
@@ -38,11 +38,22 @@ const convertCategory = (category, keyword) => {
   };
 };
 
-export default function CategoryResult({ fetchCategory, categoryList, categoryCount, keyword }) {
+export default function CategoryResult({
+  fetchCategory,
+  categoryList,
+  categoryCount,
+  keyword,
+  resetCategoryView,
+  setResetCategoryView,
+}) {
   const history = useHistory();
 
+  useEffect(() => {
+    setResetCategoryView(true);
+  }, []);
+
   const getNextUrl = (no) => {
-    const esp = [81644, 81643, 81645];
+    const esp = [81644, espCategoryNo, 81645];
     if (esp.includes(no)) return '/esp';
 
     return _.chain(categoriesExtraDataMap)
@@ -83,9 +94,13 @@ export default function CategoryResult({ fetchCategory, categoryList, categoryCo
             ))}
         </ul>
       </div>
-      {categoryCount >= 10 && (
-        <ViewMore totalCount={categoryCount} viewMore={fetchCategory} pageSize={PAGE_SIZE.CATEGORY} />
-      )}
+      <ViewMore
+        totalCount={categoryCount}
+        viewMore={fetchCategory}
+        pageSize={PAGE_SIZE.CATEGORY}
+        reset={resetCategoryView}
+        setReset={setResetCategoryView}
+      />
     </>
   );
 }

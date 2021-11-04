@@ -53,6 +53,7 @@ export default function SearchResult({ match }) {
     word && handleSearch(word);
   }, [history.location.pathname]);
 
+  const [resetViewMore, setResetViewMore] = useState(false);
   const [productList, setProductList] = useState([]);
   const [initialEventList, setInitialEventList] = useState([]);
   const [eventList, setEventList] = useState([]);
@@ -63,7 +64,28 @@ export default function SearchResult({ match }) {
   const [productCount, setProductCount] = useState(0);
   const [eventCount, setEventCount] = useState(0);
   const [categoryCount, setCategoryCount] = useState(0);
+  const [resetCategoryView, setResetCategoryView] = useState(false);
   const [noticeCount, setNoticeCount] = useState(0);
+
+  const isAll = useMemo(() => tabState === 'ALL', [tabState]);
+
+  const count = useMemo(
+    () => ({
+      ALL: productCount + eventCount + categoryCount + noticeCount,
+      PRODUCT: productCount,
+      EVENT: eventCount,
+      CATEGORY: categoryCount,
+      NOTICE: noticeCount,
+    }),
+    [productCount, eventCount, categoryCount, noticeCount],
+  );
+
+  useEffect(() => {
+    if (isAll && tabState === 'CATEGORY') {
+      searchCategory(keyword);
+      return;
+    }
+  }, [tabState]);
 
   const getProductQuery = useCallback((keyword, orderBy, pageNumber = 1, pageSize = PAGE_SIZE.PRODUCT) => {
     const orderByQuery = _.chain(orderList)
@@ -90,6 +112,7 @@ export default function SearchResult({ match }) {
       setProductList((prev) => (pageNumber > 1 ? prev.concat(ret) : ret));
       // setProductCount((prev) => (pageNumber > 1 ? prev + ret.length : ret.length || 0));
       setProductCount(data.totalCount);
+      setResetCategoryView(false);
     } catch (e) {
       console.error(e);
     }
@@ -135,10 +158,12 @@ export default function SearchResult({ match }) {
   const fetchCategory = (pageNumber, data, pageSize = PAGE_SIZE.CATEGORY) => {
     if (pageNumber === 1) {
       setCategoryList(data.slice(0, pageSize));
+      setResetCategoryView(true);
     } else {
       const start = (pageNumber - 1) * pageSize;
       const end = start + pageSize;
       setCategoryList((prev) => prev.concat(initialCategoryList.slice(start, end)));
+      setResetCategoryView(false);
     }
   };
 
@@ -149,6 +174,7 @@ export default function SearchResult({ match }) {
       // setCategoryList(data.flatCategories);
       setCategoryCount(data.flatCategories.length || 0);
       fetchCategory(1, data.flatCategories);
+      setResetCategoryView(true);
     } catch (e) {
       console.error(e);
     }
@@ -184,20 +210,8 @@ export default function SearchResult({ match }) {
     searchNotice(mapNewKeyword, config.notice.boardNo);
     searchEvent(mapNewKeyword);
     searchCategory(mapNewKeyword);
+    setResetViewMore(false);
   };
-
-  const isAll = useMemo(() => tabState === 'ALL', [tabState]);
-
-  const count = useMemo(
-    () => ({
-      ALL: productCount + eventCount + categoryCount + noticeCount,
-      PRODUCT: productCount,
-      EVENT: eventCount,
-      CATEGORY: categoryCount,
-      NOTICE: noticeCount,
-    }),
-    [productCount, eventCount, categoryCount, noticeCount],
-  );
 
   useEffect(() => fetchBoardConfig(dispatch, config.notice?.boardNo), [dispatch, config.notice?.boardNo]);
   useEffect(() => {
@@ -222,7 +236,12 @@ export default function SearchResult({ match }) {
         <div className="container">
           <div className="content no_margin">
             {/* 검색 영역 페이지에 no_margin 클래스 추가 */}
-            <ResultTop handleSearch={handleSearch} allCount={count.ALL} initalKeyword={initalKeyword} />
+            <ResultTop
+              handleSearch={handleSearch}
+              allCount={count.ALL}
+              initalKeyword={initalKeyword}
+              setResetViewMore={setResetViewMore}
+            />
             <Tab tabState={tabState} setTabState={setTabState} count={count} />
             {count.ALL === 0 ? (
               <SearchResultNone />
@@ -237,6 +256,7 @@ export default function SearchResult({ match }) {
                       setOrderBy={setOrderBy}
                       searchProduct={searchProduct}
                       keyword={keyword}
+                      resetViewMore={resetViewMore}
                     />
                   )}
                   {(isAll || tabState === 'EVENT') && (
@@ -254,6 +274,8 @@ export default function SearchResult({ match }) {
                       keyword={keyword}
                       categoryList={categoryList}
                       categoryCount={categoryCount}
+                      resetCategoryView={resetCategoryView}
+                      setResetCategoryView={setResetCategoryView}
                     />
                   )}
                   {(isAll || tabState === 'NOTICE') && (

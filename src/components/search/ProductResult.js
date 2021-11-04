@@ -6,7 +6,15 @@ import _ from 'lodash';
 import { postProductsGroupManagementCode } from '../../api/product';
 import ViewMore from '../common/ViewMore';
 
-export default function ProductResult({ productList, orderBy, setOrderBy, productCount, searchProduct, keyword }) {
+export default function ProductResult({
+  productList,
+  orderBy,
+  setOrderBy,
+  productCount,
+  searchProduct,
+  keyword,
+  resetViewMore,
+}) {
   const [mobileOrderOpen, setMobileOrderOpen] = useState(false);
   const [products, setProducts] = useState(productList);
 
@@ -108,6 +116,7 @@ export default function ProductResult({ productList, orderBy, setOrderBy, produc
           totalCount={productCount}
           viewMore={(pageNumber) => searchProduct(keyword, orderBy, pageNumber)}
           pageSize={PAGE_SIZE.PRODUCT}
+          reset={resetViewMore}
         />
       )}
     </>
